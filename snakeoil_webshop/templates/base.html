@@ -25,7 +25,7 @@
       <li class="active">
         <a href="{% url 'shop' %}"><span class="glyphicon glyphicon-picture"></span> Shop</a>
       </li>
-      {% if perms.snakeoil_webshop.can_create_product %}
+      {% if perms.snakeoil_webshop.add_product %}
         <li>
             <a href="{% url 'product-management' %}"><span class="glyphicon glyphicon-equalizer"></span> Product management</a>
         </li>

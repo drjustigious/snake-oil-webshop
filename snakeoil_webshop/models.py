@@ -1,6 +1,5 @@
-from enum import unique
 from django.db import models
-from snakeoil import settings
+from django.contrib.auth.models import User
 
 
 class Product(models.Model):
@@ -20,7 +19,7 @@ class Product(models.Model):
     # These fields should really be derived from other models,
     # but let's just keep things simple and include some per-product
     # constants here.
-    price = models.DecimalField(default=0.00)
+    price = models.DecimalField(default=0.00, decimal_places=2, max_digits=8)
     num_in_stock = models.IntegerField(default=0)
 
     
@@ -29,7 +28,7 @@ class ShoppingCart(models.Model):
     A collection of shopped items associated with a particular user.
     """
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE
     )
 
