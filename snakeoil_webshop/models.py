@@ -22,6 +22,9 @@ class Product(models.Model):
     price = models.DecimalField(default=0.00, decimal_places=2, max_digits=8)
     num_in_stock = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.sku} - {self.description}"
+
     
 class ShoppingCart(models.Model):
     """
@@ -31,6 +34,9 @@ class ShoppingCart(models.Model):
         User,
         on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return f"Cart {self.pk} of {self.user.username}"    
 
 
 class ShoppingCartItem(models.Model):
@@ -56,3 +62,6 @@ class ShoppingCartItem(models.Model):
     )
 
     num_items = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.num_items} x {self.product.sku}"
