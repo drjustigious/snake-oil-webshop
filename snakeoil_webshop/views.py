@@ -5,6 +5,10 @@ from django.views.generic import TemplateView
 from snakeoil_webshop.forms import ProductSearchForm
 from snakeoil_webshop.models import Product
 
+# Constants for identifying which view is getting rendered.
+SHOP = "SHOP"
+PRODUCT_MANAGEMENT = "PRODUCT_MANAGEMENT"
+SHOPPING_CART = "SHOPPING_CART"
 
 class ShopView(LoginRequiredMixin, TemplateView):
     
@@ -28,7 +32,8 @@ class ShopView(LoginRequiredMixin, TemplateView):
 
         added_context = {
             "form": form,
-            "products": products
+            "products": products,
+            "active_view": SHOP
         }
         context.update(added_context)
 
