@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'snakeoil_webshop'
+    'snakeoil_webshop',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,5 @@ LOGIN_URL = "login/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

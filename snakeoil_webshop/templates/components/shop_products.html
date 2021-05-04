@@ -1,0 +1,5 @@
+{% for product in products %}
+    <p>{{ product.sku }} - {{ product.name }}</p>
+{% empty %}
+    <p>We found no products matching your search.</p>
+{% endfor %}

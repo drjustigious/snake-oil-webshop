@@ -10,6 +10,7 @@ class Product(models.Model):
 
     # Text fields for identifying the product.
     sku = models.SlugField(unique=True)
+    name = models.TextField()
     description = models.TextField()
 
     # Timestamps for monitoring the life cycle of the product.
