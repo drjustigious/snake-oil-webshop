@@ -57,7 +57,7 @@ class ProductSearchForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'List products'))    
+        self.helper.add_input(Submit('submit', 'List products', css_class='btn-success'))    
 
 
     def filter_results(self):
