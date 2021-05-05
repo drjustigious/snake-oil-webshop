@@ -79,7 +79,6 @@ class ProductSearchForm(forms.Form):
             results = results.filter(q)
 
         sort_by = self.cleaned_data.get("sort_by", self.NAME_ASC)
-        print(sort_by)
         results = results.order_by(sort_by)
 
         return results
@@ -91,7 +90,36 @@ class ProductSearchForm(forms.Form):
         Called when a fresh empty form is presented
         to the user.
         """
-        results = Product.objects.all()
+        results = Product.objects.all().order_by(self.NAME_ASC)
+
+        return results
+
+
+class ProductCreationForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            'sku',
+            'name',
+            'description',
+            'price',
+            'num_in_stock'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Add product', css_class='btn-success'))          
+
+
+    def give_all_results(self):
+        """
+        Return all product definitions in the reverse update order,
+        i.e. the last product modified comes up first.
+        """
+        results = Product.objects.all().order_by('-updated')
+
         return results
 
 

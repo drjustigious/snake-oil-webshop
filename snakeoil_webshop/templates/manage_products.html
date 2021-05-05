@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block modals %}
+    {% include "components/product_management_details_modal.html" %}
+{% endblock %}
+
+{% block content %}
+    <h1>Define a New Product</h1>
+    <div>
+        {% crispy form %}
+    </div>
+    <hr/>
+    
+    {% include "components/managed_products.html" %}
+{% endblock %}

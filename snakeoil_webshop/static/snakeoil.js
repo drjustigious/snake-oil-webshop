@@ -108,7 +108,7 @@ snakeoil.addToCart = function(button, productId) {
 
 snakeoil.showProductDetails = function(product) {
     /* Populate the product details modal with the correct information
-    *  and open the modal.
+    *  and open the modal. This version is for the web shop view.
     */
 
     // Set the modal title to match the current product.
@@ -132,4 +132,27 @@ snakeoil.showProductDetails = function(product) {
     }
 
     $('#productDetailsModal').modal();
+};
+
+
+snakeoil.showManagedProductDetails = function(product) {
+    /* Populate the product details modal with the correct information
+    *  and open the modal. This version is for the product management view.
+    */
+
+    // Set the modal title to match the current product.
+    let title = document.getElementById("productManagementDetailsModalTitle");
+    title.innerText = `${product.sku} - ${product.name}`;
+
+    // Update the product etail fields.
+    let tableBody = document.getElementById("productManagementDetailsTableBody");
+    snakeoil.removeChildren(tableBody);
+    
+    for (let key in product) {
+        if (key == "pk") continue;
+        let humanizedKey = snakeoil.humanizeKey(key);
+        snakeoil.addKeyValueRow(tableBody, humanizedKey, product[key]);
+    }
+
+    $('#productManagementDetailsModal').modal();
 };

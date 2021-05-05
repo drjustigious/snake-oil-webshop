@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import permission_required
 from django.urls import path
 
-from snakeoil_webshop.views import ShopView, AddToCartView
+from snakeoil_webshop.views import ShopView, AddToCartView, ProductManagementView
 
 
 urlpatterns = [
     path("", ShopView.as_view(), name="shop"),
-    path("manage/products/", ShopView.as_view(), name="product-management"),
+    path("manage/products/", permission_required('snakeoil_webshop.add_product')(ProductManagementView.as_view()), name="product-management"),
     path("cart/", ShopView.as_view(), name="shopping-cart"),
     path("cart/add/", AddToCartView.as_view(), name="add-to-cart"),
 

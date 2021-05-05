@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from snakeoil_webshop import helpers
-from snakeoil_webshop.forms import ProductSearchForm, AddToCartForm
+from snakeoil_webshop.forms import ProductSearchForm, AddToCartForm, ProductCreationForm
 from snakeoil_webshop.models import Product, ShoppingCart, ShoppingCartItem
 
 # Import the whole serializers module to extend Product with the as_json method.
@@ -49,6 +49,48 @@ class ShopView(LoginRequiredMixin, TemplateView):
             "products": products,
             "num_results": len(products),
             "active_view": SHOP,
+            "shopping_cart_string": active_shopping_cart.summarize()
+        }
+        context.update(added_context)
+
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+
+class ProductManagementView(ShopView):
+
+    template_name = "manage_products.html"
+
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ShopView, self).get_context_data(*args, **kwargs)
+
+        if self.request.method == 'POST':
+            # We received a filled product creation form from the user.
+            # Remember the settings to make it easier to add similar products.
+            form = ProductCreationForm(self.request.POST)
+            if form.is_valid():
+                # TODO: Create a new product with the given information.
+                pass
+        else:
+            # We're serving the product management page out for the first time
+            # with an empty product creation form.
+            form = ProductCreationForm()
+
+        products = form.give_all_results()
+        active_shopping_cart = helpers.find_active_cart_for_user(self.request.user)
+
+        added_context = {
+            "form": form,
+            "products": products,
+            "num_results": len(products),
+            "active_view": PRODUCT_MANAGEMENT,
             "shopping_cart_string": active_shopping_cart.summarize()
         }
         context.update(added_context)
