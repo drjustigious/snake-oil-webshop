@@ -47,6 +47,7 @@ class ShopView(LoginRequiredMixin, TemplateView):
         added_context = {
             "form": form,
             "products": products,
+            "num_results": len(products),
             "active_view": SHOP,
             "shopping_cart_string": active_shopping_cart.summarize()
         }
