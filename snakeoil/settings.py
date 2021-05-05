@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'snakeoil_webshop',
     'crispy_forms',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

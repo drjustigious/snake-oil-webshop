@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -25,6 +27,9 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.sku} - {self.description}"
+
+    def as_json(self):
+        raise NotImplementedError("Product.as_json must be overridden by importing the serializers.")
 
     
 class ShoppingCart(models.Model):

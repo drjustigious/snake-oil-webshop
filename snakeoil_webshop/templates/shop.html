@@ -2,6 +2,10 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block modals %}
+    {% include "components/product_details_modal.html" %}
+{% endblock %}
+
 {% block content %}
     <h1>Snake Oil Shop</h1>
     <div>

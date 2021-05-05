@@ -3,5 +3,6 @@
 
 Django>=3.2
 django-crispy-forms
+djangorestframework
 mysqlclient
 python-dotenv

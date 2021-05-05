@@ -93,3 +93,14 @@ class ProductSearchForm(forms.Form):
         """
         results = Product.objects.all()
         return results
+
+
+class AddToCartForm(forms.Form):
+    """
+    A lightweight form for validating requests to add a product
+    to the shopping cart.
+    """
+    # The product ID.
+    pk = forms.IntegerField()
+    # How many items to add?
+    num_items = forms.IntegerField(required=False)

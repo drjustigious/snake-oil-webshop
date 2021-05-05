@@ -31,7 +31,7 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li>
-            <a href="{% url 'product-management' %}"><span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;{{ shopping_cart_string|default:"0 items | 0.00 €" }}&nbsp;</a>
+            <a id="shoppingCartNavLink" href="{% url 'product-management' %}"><span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;{{ shopping_cart_string|default:"0 items | 0.00 €" }}&nbsp;</a>
         </li>
       {% if user %}
         <li class="dropdown">
@@ -52,10 +52,22 @@
   </div>
 </nav>
 
+{% block modals %}{% endblock %}
+
 <div class="container">
   {% block content %}{% endblock %}
 </div>
 
-<script src="{% static 'snakeoil.js' %}"></script>
+
+<!-- Inject template variables into JavaScript. -->
+{% csrf_token %}
+<script type="text/javascript">
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  var webShopUrls = {
+    addToCart: "{% url "add-to-cart" %}"
+  };
+</script>
+<!-- Load the project-specific JavaScript resources. -->
+<script type="text/javascript" src="{% static 'snakeoil.js' %}"></script>
 </body>
 </html>

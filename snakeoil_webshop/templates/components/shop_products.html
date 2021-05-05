@@ -1,3 +1,4 @@
+ <!-- A table containing the products found as the result of a web shop search. -->
  <table class="table table-hover">
   <thead>
     <tr>
@@ -10,13 +11,17 @@
   </thead>
   <tbody>
     {% for product in products %}
-        <tr onclick="console.log('Hello.'); return false;">
-            <td>{{ product.sku }}</td>
-            <td>{{ product.name }}</td>
-            <td>{{ product.price }} €</td>
-            <td>{{ product.num_in_stock }}</td>
-            <td><button type="button" class="btn btn-success clickstopper" onclick="console.log('World.'); return false;"><span class="glyphicon glyphicon-circle-arrow-down"></span>&nbsp;Add to cart</button></td>
-        </tr>
+      <tr onclick="snakeoil.showProductDetails({{ product.as_json }})">
+        <td>{{ product.sku }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price }} €</td>
+        <td>{{ product.num_in_stock }}</td>
+        <td>
+          <button type="button" class="btn btn-success clickstopper" onclick="snakeoil.addToCart(this, {{ product.pk }});">
+            <span class="glyphicon glyphicon-circle-arrow-down"></span>&nbsp;Add to cart
+          </button>
+        </td>
+      </tr>
     {% empty %}
         <p>We found no products matching your search.</p>
     {% endfor %}
