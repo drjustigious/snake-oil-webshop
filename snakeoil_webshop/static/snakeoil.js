@@ -1,5 +1,3 @@
-console.log("webShopUrls:", webShopUrls);
-
 // Prevent click event propagation to parents of objects
 // with the class "clickstopper".
 $(".clickstopper").click(function(e) {
@@ -8,6 +6,7 @@ $(".clickstopper").click(function(e) {
 
 
 var snakeoil = {} || snakeoil;
+
 
 snakeoil.humanizeKey = function(key) {
     /* Turn the given data field key into something
@@ -33,11 +32,13 @@ snakeoil.humanizeKey = function(key) {
     }
 };
 
+
 snakeoil.removeChildren = function(parentElement) {
     while (parentElement.firstChild) {
         parentElement.removeChild(parentElement.lastChild);
     }
 };
+
 
 snakeoil.addDataToTableRow = function(tableRow, data, strong=false) {
     let td = document.createElement("td");
@@ -52,6 +53,7 @@ snakeoil.addDataToTableRow = function(tableRow, data, strong=false) {
     tableRow.appendChild(td);
 };
 
+
 snakeoil.addKeyValueRow = function(tableBody, key, value) {
     let tr = document.createElement("tr");
     snakeoil.addDataToTableRow(tr, key, strong=true);
@@ -60,7 +62,7 @@ snakeoil.addKeyValueRow = function(tableBody, key, value) {
 };
 
 
-snakeoil.flashTextOnButton = function(button, textToFlash, flashTimeMillisecs=2000) {
+snakeoil.flashTextOnButton = function(button, textToFlash, flashTimeMillisecs=1500) {
     if (!button.oldInnerHtml)
         button.oldInnerHtml = button.innerHTML;
     button.innerHTML = `<span class="glyphicon glyphicon-circle-arrow-down"></span>&nbsp;${textToFlash}`;
@@ -109,9 +111,17 @@ snakeoil.showProductDetails = function(product) {
     *  and open the modal.
     */
 
+    // Set the modal title to match the current product.
     let title = document.getElementById("productDetailsModalTitle");
     title.innerText = `${product.sku} - ${product.name}`;
-    console.log("Opening:", product);
+
+    // Set the correct "add to cart" callback.
+    addToCartButton = document.getElementById("productDetailsAddToCartButton");
+    addToCartButton.onclick = function() {
+        snakeoil.addToCart(productDetailsAddToCartButton, product.pk);
+    }
+
+    // Update the product etail fields.
     let tableBody = document.getElementById("productDetailsTableBody");
     snakeoil.removeChildren(tableBody);
     
