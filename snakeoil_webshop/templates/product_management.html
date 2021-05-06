@@ -13,6 +13,11 @@
             <strong>There was an error. Please check your input where indicated.</strong>
         </div>
     {% endif %}
+    {% if new_product %}
+        <div class="alert alert-success">
+            <strong>New product added: {{ new_product.sku }} - {{ new_product.name }}.</strong>
+        </div>
+    {% endif %}    
     <div>
         {% crispy form %}
     </div>

@@ -73,13 +73,14 @@ class ProductManagementView(ShopView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(ShopView, self).get_context_data(*args, **kwargs)
+        new_product = None
 
         if self.request.method == 'POST':
             # We received a filled product creation form from the user.
             # Remember the settings to make it easier to add similar products.
             form = ProductCreationForm(self.request.POST)
             if form.is_valid():
-                self.create_new_product(form.cleaned_data)
+                new_product = self.create_new_product(form.cleaned_data)
         else:
             # We're serving the product management page out for the first time
             # with an empty product creation form.
@@ -92,6 +93,7 @@ class ProductManagementView(ShopView):
             "form": form,
             "products": products,
             "num_results": len(products),
+            "new_product": new_product,
             "active_view": PRODUCT_MANAGEMENT,
             "shopping_cart_string": active_shopping_cart.summarize()
         }
@@ -109,9 +111,8 @@ class ProductManagementView(ShopView):
         Create a new product corresponding to the given
         cleaned data from a ProductCreationForm.
         """
-        print(f"cleaned_data: {cleaned_data}")
-        Product.objects.create(**cleaned_data)
-
+        product = Product.objects.create(**cleaned_data)
+        return product
 
 
 class ShoppingCartView(LoginRequiredMixin, TemplateView):
