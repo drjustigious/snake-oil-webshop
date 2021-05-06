@@ -198,3 +198,37 @@ class CartTransactionsTestCase(TestCase):
         self.assertEqual(cart_item.num_items, 2*num_to_add)
 
         self.client.logout()
+
+
+    def test_can_clear_cart(self):
+        """
+        Verify that a customer can clear their shopping cart.
+        """
+        product_to_add = Product.objects.get(sku=add_demo_products.Command.SKU001)
+        num_to_add = 3
+
+        self.client.force_login(self.customer)
+
+        # Add items to cart.
+        response = self.client.post(
+            reverse("add-to-cart"),
+            {
+                'pk': product_to_add.pk,
+                'num_items': num_to_add
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Clear the cart. The user should be redirected back to the cart view.
+        response = self.client.get(
+            reverse("clear-cart")
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.get("Location"), reverse("shopping-cart"))
+
+        # Assert the cart is empty.
+        cart = helpers.find_active_cart_for_user(self.customer)
+        cart_items = cart.shopping_cart_items.all() or None
+        self.assertIsNone(cart_items)
+
+        self.client.logout()
