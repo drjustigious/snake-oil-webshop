@@ -26,7 +26,7 @@ class Product(models.Model):
     num_in_stock = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.sku} - {self.description}"
+        return f"{self.sku} - {self.name}"
 
     def as_json(self):
         raise NotImplementedError("Product.as_json must be overridden by importing the serializers.")
