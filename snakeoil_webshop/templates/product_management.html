@@ -8,6 +8,11 @@
 
 {% block content %}
     <h1>Define a New Product</h1>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>There was an error. Please check your input where indicated.</strong>
+        </div>
+    {% endif %}
     <div>
         {% crispy form %}
     </div>

@@ -72,8 +72,6 @@ snakeoil.flashTextOnButton = function(button, textToFlash, flashTimeMillisecs=15
 
 snakeoil.addToCart = function(button, productId) {
     /* Add a product with the given primary key to the cart. */
-
-    console.log(`addToCart(${productId})`);
     snakeoil.flashTextOnButton(button, "Added!");
 
     const request = new Request(
@@ -100,6 +98,7 @@ snakeoil.addToCart = function(button, productId) {
         }
         else {
             // There was some issue.
+            console.log("An error occurred while adding items to cart.");
             console.log(data);
         }
     });

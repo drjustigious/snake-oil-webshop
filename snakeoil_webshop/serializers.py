@@ -1,5 +1,6 @@
 import json
 
+from decimal import Decimal
 from django.db.models import Sum, F
 from rest_framework.serializers import ModelSerializer
 from snakeoil_webshop.models import Product, ShoppingCart
@@ -48,6 +49,11 @@ def cart_summary_as_string(self):
                 F('product__price')*F('num_items')
             )
         ).get('total_price', 0.00)
+
+    if total_num_items is None:
+        total_num_items = 0
+    if total_price is None:
+        total_price = Decimal("0.00")
 
     summary_string = f"{total_num_items} items | {total_price} €"
     return summary_string

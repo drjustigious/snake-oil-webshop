@@ -2,7 +2,8 @@ import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
+from django.db.models import Sum, F
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -13,13 +14,14 @@ from snakeoil_webshop.forms import ProductSearchForm, AddToCartForm, ProductCrea
 from snakeoil_webshop.models import Product, ShoppingCart, ShoppingCartItem
 
 # Import the whole serializers module to extend Product with the as_json method.
-import snakeoil_webshop.serializers
+import snakeoil_webshop.serializers  # type: ignore
 
 
 # Constants for identifying which view is getting rendered.
 SHOP = "SHOP"
 PRODUCT_MANAGEMENT = "PRODUCT_MANAGEMENT"
 SHOPPING_CART = "SHOPPING_CART"
+
 
 
 class ShopView(LoginRequiredMixin, TemplateView):
@@ -60,9 +62,10 @@ class ShopView(LoginRequiredMixin, TemplateView):
         return self.get(request, *args, **kwargs)
 
 
+
 class ProductManagementView(ShopView):
 
-    template_name = "manage_products.html"
+    template_name = "product_management.html"
 
     login_url = '/login/'
     redirect_field_name = 'next'
@@ -76,8 +79,7 @@ class ProductManagementView(ShopView):
             # Remember the settings to make it easier to add similar products.
             form = ProductCreationForm(self.request.POST)
             if form.is_valid():
-                # TODO: Create a new product with the given information.
-                pass
+                self.create_new_product(form.cleaned_data)
         else:
             # We're serving the product management page out for the first time
             # with an empty product creation form.
@@ -100,6 +102,53 @@ class ProductManagementView(ShopView):
 
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
+
+
+    def create_new_product(self, cleaned_data):
+        """
+        Create a new product corresponding to the given
+        cleaned data from a ProductCreationForm.
+        """
+        print(f"cleaned_data: {cleaned_data}")
+        Product.objects.create(**cleaned_data)
+
+
+
+class ShoppingCartView(LoginRequiredMixin, TemplateView):
+
+    template_name = "shopping_cart.html"
+
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ShoppingCartView, self).get_context_data(*args, **kwargs)
+
+        active_shopping_cart = helpers.find_active_cart_for_user(self.request.user)
+        items_in_cart = active_shopping_cart.shopping_cart_items.select_related("product")
+
+        total_num_items = active_shopping_cart.shopping_cart_items.aggregate(
+                total_num_items=Sum('num_items'),
+            ).get('total_num_items', 0)
+
+        total_price = active_shopping_cart.shopping_cart_items.aggregate(
+                total_price=Sum(
+                    F('product__price')*F('num_items')
+                )
+            ).get('total_price', 0.00)        
+
+        additional_context = {
+            "items_in_cart": items_in_cart,
+            "num_items": total_num_items,
+            "total_price": total_price,
+            "active_view": SHOPPING_CART,
+            "shopping_cart_string": active_shopping_cart.summarize()
+        }
+        context.update(additional_context)
+
+        return context
+
 
 
 class AddToCartView(APIView):
@@ -157,3 +206,24 @@ class AddToCartView(APIView):
         }
 
         return Response(response_data, status=200)
+
+
+
+class ClearCartView(RedirectView):
+    """
+    A view that clears the requesting user's shopping cart
+    and redirects them back to see the empty cart.
+    """
+    permanent = False
+    query_string = True
+    pattern_name = "shopping-cart"
+
+
+    def get_redirect_url(self, *args, **kwargs):
+        """
+        Clear the requesting user's cart before redirecting.
+        """
+        active_shopping_cart = helpers.find_active_cart_for_user(self.request.user)
+        active_shopping_cart.shopping_cart_items.all().delete()
+
+        return super().get_redirect_url(*args, **kwargs)

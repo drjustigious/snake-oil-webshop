@@ -3,6 +3,7 @@ from django.db.models import Q
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import widgets
 
 from snakeoil_webshop.models import Product
 
@@ -95,7 +96,12 @@ class ProductSearchForm(forms.Form):
         return results
 
 
+
 class ProductCreationForm(forms.ModelForm):
+    """
+    This form collects the details necessary for adding a new
+    product into the web shop's database.
+    """
     class Meta:
         model = Product
         fields = [
@@ -103,14 +109,44 @@ class ProductCreationForm(forms.ModelForm):
             'name',
             'description',
             'price',
-            'num_in_stock'
+            'num_in_stock',
         ]
+        labels = {
+            "sku": "Product code",
+            "num_in_stock": "Number of items in stock"
+        }
+        widgets = {
+            "name": forms.TextInput
+        }
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Add product', css_class='btn-success'))          
+        self.helper.add_input(Submit('submit', 'Add product', css_class='btn-success'))
+
+
+    def clean_price(self):
+        """
+        Make sure the given price isn't negative.
+        """
+        price = self.cleaned_data.get("price")
+        if price < 0:
+            raise forms.ValidationError("The price of a product cannot be negative.")
+
+        return price
+
+
+    def clean_num_in_stock(self):
+        """
+        Make sure the given number of items in stock isn't negative.
+        """
+        num_in_stock = self.cleaned_data.get("num_in_stock")
+        if num_in_stock < 0:
+            raise forms.ValidationError("The stock count of a product cannot be negative.")
+
+        return num_in_stock
 
 
     def give_all_results(self):
@@ -121,6 +157,7 @@ class ProductCreationForm(forms.ModelForm):
         results = Product.objects.all().order_by('-updated')
 
         return results
+
 
 
 class AddToCartForm(forms.Form):

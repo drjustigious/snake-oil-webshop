@@ -18,14 +18,21 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import permission_required
 from django.urls import path
 
-from snakeoil_webshop.views import ShopView, AddToCartView, ProductManagementView
+from snakeoil_webshop.views import (
+    ShopView,
+    AddToCartView,
+    ClearCartView,
+    ShoppingCartView,
+    ProductManagementView
+)
 
 
 urlpatterns = [
     path("", ShopView.as_view(), name="shop"),
     path("manage/products/", permission_required('snakeoil_webshop.add_product')(ProductManagementView.as_view()), name="product-management"),
-    path("cart/", ShopView.as_view(), name="shopping-cart"),
+    path("cart/", ShoppingCartView.as_view(), name="shopping-cart"),
     path("cart/add/", AddToCartView.as_view(), name="add-to-cart"),
+    path("cart/clear/", ClearCartView.as_view(), name="clear-cart"),
 
     path("admin/", admin.site.urls),
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
