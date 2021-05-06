@@ -164,7 +164,7 @@ class AddToCartView(APIView):
         validation_form = AddToCartForm(request.data)
         if not validation_form.is_valid():
             return Response(
-                "Bad request. Form invalid.",
+                "Bad request.",
                 status=400
             )
 
