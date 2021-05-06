@@ -46,6 +46,7 @@ class Command(BaseCommand):
         password = secrets.token_urlsafe(self.PASSWORD_LENGTH)
         self.stdout.write(self.style.NOTICE(f"{user.username.ljust(16)}: {password}"))
         user.set_password(password)
+        user.save()
 
         return user
 
