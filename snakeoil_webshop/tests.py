@@ -1,3 +1,5 @@
+from snakeoil_webshop.models import Product
+from snakeoil_webshop import helpers
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -105,4 +107,94 @@ class PermissionsTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.get("Location").startswith("login"))
+        self.client.logout()
+
+
+class CartTransactionsTestCase(TestCase):
+    """
+    Verify that a customer can add and remove products
+    to and from their shopping cart.
+    """
+
+    def setUp(self):
+        add_demo_users.Command().handle(silent=True)
+        add_demo_products.Command().handle(silent=True)
+
+        self.customer = User.objects.get(username=add_demo_users.Command.CUSTOMER_X_USERNAME)
+        self.client = Client()
+
+
+    def test_can_add_single_items_to_cart(self):
+        """
+        Add two individual items to the shopping cart
+        with an implied item count of 1 each.
+        """
+        products_to_add = [
+            Product.objects.get(sku=add_demo_products.Command.SKU001),
+            Product.objects.get(sku=add_demo_products.Command.SKU002)
+        ]
+
+        self.client.force_login(self.customer)
+
+        # Add first item.
+        response = self.client.post(
+            reverse("add-to-cart"),
+            {'pk': products_to_add[0].pk}
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Add second item.
+        response = self.client.post(
+            reverse("add-to-cart"),
+            {'pk': products_to_add[1].pk}
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Check what's in the cart.
+        cart = helpers.find_active_cart_for_user(self.customer)
+        products_in_cart = [
+            cart.shopping_cart_items.select_related("product").get(product=products_to_add[0]),
+            cart.shopping_cart_items.select_related("product").get(product=products_to_add[1])
+        ]
+
+        self.assertEqual(products_to_add[0].pk, products_in_cart[0].product.pk)
+        self.assertEqual(products_to_add[1].pk, products_in_cart[1].product.pk)
+
+        self.client.logout()
+
+
+    def test_can_add_multiple_items_of_product_to_cart(self):
+        """
+        Verify that it's possible how many items of a given product
+        should be dropped into the shopping cart.
+        """
+        product_to_add = Product.objects.get(sku=add_demo_products.Command.SKU001)
+        num_to_add = 3
+
+        self.client.force_login(self.customer)
+
+        # Add the items twice.
+        response = self.client.post(
+            reverse("add-to-cart"),
+            {
+                'pk': product_to_add.pk,
+                'num_items': num_to_add
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            reverse("add-to-cart"),
+            {
+                'pk': product_to_add.pk,
+                'num_items': num_to_add
+            }
+        )
+        self.assertEqual(response.status_code, 200)        
+
+        # Check what's in the cart.
+        cart = helpers.find_active_cart_for_user(self.customer)
+        cart_item = cart.shopping_cart_items.select_related("product").get(product=product_to_add)
+        self.assertEqual(cart_item.num_items, 2*num_to_add)
+
         self.client.logout()

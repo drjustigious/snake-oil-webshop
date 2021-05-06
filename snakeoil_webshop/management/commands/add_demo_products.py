@@ -3,6 +3,12 @@ from django.db.utils import IntegrityError
 from snakeoil_webshop.models import Product
 
 class Command(BaseCommand):
+    SILENT = "silent"
+
+    SKU001 = "SKU001"
+    SKU002 = "SKU002"
+    SKU003 = "SKU003"
+    SKU004 = "SKU004"
 
     help = "Create a set of dummy products suitable for demonstration purposes. Existing products with overlapping SKUs will be removed."
 
@@ -13,28 +19,28 @@ class Command(BaseCommand):
         """
         demo_products = [
             {
-                "sku": "SKU001",
+                "sku": self.SKU001,
                 "name": "Clear snake oil",
                 "description": "A clear liquid potentially possessing some aspects of the the essence of the regenerative properties of snake oil.",
                 "price": "11.99",
                 "num_in_stock": "108"
             },
             {
-                "sku": "SKU002",
+                "sku": self.SKU002,
                 "name": "Turbid snake oil",
                 "description": "A rather opaque extract from who knows what part of some venomous snake, likely from a deep jungle somewhere far away.",
                 "price": "16.99",
                 "num_in_stock": "273"
             },
             {
-                "sku": "SKU003",
+                "sku": self.SKU003,
                 "name": "Thick snake oil",
                 "description": "A viscous slime with a rather alarming aroma. Might be flammable enough to pose a moderate danger indoors.",
                 "price": "27.99",
                 "num_in_stock": "35"
             },
             {
-                "sku": "SKU004",
+                "sku": self.SKU004,
                 "name": "Potent snake oil",
                 "description": "This actively bubbling mixture of unknown biochemical agents will almost certainly cure all disese and illness that it by itself does not cause.",
                 "price": "33.99",
@@ -52,4 +58,5 @@ class Command(BaseCommand):
 
             # Create a new demo product.
             product = Product.objects.create(**product_definition)
-            self.stdout.write(self.style.SUCCESS(f"Demo product created: {product.sku} - {product.name}."))
+            if not options.get(self.SILENT, False):
+                self.stdout.write(self.style.SUCCESS(f"Demo product created: {product.sku} - {product.name}."))
