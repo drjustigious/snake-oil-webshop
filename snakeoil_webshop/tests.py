@@ -1,3 +1,5 @@
+import decimal
+
 from snakeoil_webshop.models import Product
 from snakeoil_webshop import helpers
 from django.test import TestCase, Client
@@ -230,5 +232,97 @@ class CartTransactionsTestCase(TestCase):
         cart = helpers.find_active_cart_for_user(self.customer)
         cart_items = cart.shopping_cart_items.all() or None
         self.assertIsNone(cart_items)
+
+        self.client.logout()
+
+
+class ProductManagementTestCase(TestCase):
+    """
+    Verify a shop manager can add new product definitions.
+    Also verify an ordinary customer can't.
+    """
+
+    def setUp(self):
+        add_demo_users.Command().handle(silent=True)
+
+        self.manager = User.objects.get(username=add_demo_users.Command.MANAGER_USERNAME)
+        self.customer = User.objects.get(username=add_demo_users.Command.CUSTOMER_X_USERNAME)
+
+        self.client = Client()
+
+
+    def test_manager_can_add_new_product(self):
+        """
+        Verify that a shop manager can add a new product.
+        """
+        SKU = "sku"
+        NAME = "name"
+        DESCRIPTION = "description"
+        PRICE = "price"
+        NUM_IN_STOCK = "num_in_stock"
+
+        test_product_details = {
+            SKU: "SKU005",
+            NAME: "testname",
+            DESCRIPTION: "test description",
+            PRICE: decimal.Decimal("9.99"),
+            NUM_IN_STOCK: 123
+        }
+
+        # Create the new product.
+        self.client.force_login(self.manager)
+        response = self.client.post(
+            reverse("product-management"),
+            test_product_details
+        )
+        # TODO: The standard HTTP status for "created" would be 201.
+        self.assertEqual(response.status_code, 200)
+
+        # Find the new product and check that the details match.
+        product = Product.objects.get(sku=test_product_details[SKU])
+
+        self.assertEqual(product.sku, test_product_details[SKU])
+        self.assertEqual(product.name, test_product_details[NAME])
+        self.assertEqual(product.description, test_product_details[DESCRIPTION])
+        self.assertEqual(product.price, test_product_details[PRICE])
+        self.assertEqual(product.num_in_stock, test_product_details[NUM_IN_STOCK])
+
+        self.client.logout()
+
+
+    def test_customer_cannot_add_products(self):
+        """
+        Verify that an ordinary customer cannot add a product.
+        """
+        SKU = "sku"
+        NAME = "name"
+        DESCRIPTION = "description"
+        PRICE = "price"
+        NUM_IN_STOCK = "num_in_stock"
+
+        test_product_details = {
+            SKU: "SKU005",
+            NAME: "testname",
+            DESCRIPTION: "test description",
+            PRICE: 9.99,
+            NUM_IN_STOCK: 123
+        }
+
+        # Try to create the new product. The user should be
+        # redirected to login.
+        self.client.force_login(self.customer)
+        response = self.client.post(
+            reverse("product-management"),
+            test_product_details
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.get("Location").startswith("login"))
+
+        # Make sure the product did not get created.
+        try:
+            product = Product.objects.get(sku=test_product_details[SKU])
+            self.assertIsNone(product)
+        except Product.DoesNotExist:
+            pass
 
         self.client.logout()
