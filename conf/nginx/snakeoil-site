@@ -1,0 +1,13 @@
+server {
+    listen 80;
+    server_name 18.193.156.208;
+
+    location /static/ {
+        root /opt/bitnami/projects/snake-oil-webshop;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/opt/bitnami/projects/snake-oil-webshop/snakeoil.sock;
+    }
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=bitnami
+Group=bitnami
+WorkingDirectory=/opt/bitnami/projects/snake-oil-webshop/
+ExecStart=/opt/bitnami/projects/snake-oil-webshop/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/opt/bitnami/projects/s$
+
+[Install]
+WantedBy=multi-user.target
