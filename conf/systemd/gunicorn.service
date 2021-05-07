@@ -1,3 +1,8 @@
+# To enable and start running this service:
+# - Place this file in /etc/systemd/system/
+# - sudo systemctl enable gunicorn.service
+# - sudo systemctl start gunicorn.service
+
 [Unit]
 Description=gunicorn daemon
 After=network.target
@@ -6,7 +11,9 @@ After=network.target
 User=bitnami
 Group=bitnami
 WorkingDirectory=/opt/bitnami/projects/snake-oil-webshop/
-ExecStart=/opt/bitnami/projects/snake-oil-webshop/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/opt/bitnami/projects/s$
+ExecStart=/opt/bitnami/projects/snake-oil-webshop/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/opt/bitnami/projects/snake-oil-webshop/snakeoil.sock snakeoil.wsgi:application
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
