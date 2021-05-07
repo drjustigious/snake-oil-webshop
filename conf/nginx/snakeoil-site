@@ -1,6 +1,11 @@
+# To enable the snakeoil site via nginx:
+# - Copy this file to /etc/nginx/sites-available/
+# - Symlink to /etc/nginx/sites-enabled/
+# - sudo systemctl restart nginx
+
 server {
     listen 80;
-    server_name 18.193.156.208;
+    server_name 18.193.156.208;  # Use the Django server's actual public IP address here.
 
     location /static/ {
         root /opt/bitnami/projects/snake-oil-webshop;
