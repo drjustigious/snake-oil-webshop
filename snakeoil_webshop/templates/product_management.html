@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block modals %}
+    {% include "components/product_management_details_modal.html" %}
+{% endblock %}
+
+{% block content %}
+    <h1>Define a New Product</h1>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>There was an error. Please check your input where indicated.</strong>
+        </div>
+    {% endif %}
+    {% if new_product %}
+        <div class="alert alert-success">
+            <strong>New product added: {{ new_product.sku }} - {{ new_product.name }}.</strong>
+        </div>
+    {% endif %}    
+    <div>
+        {% crispy form %}
+    </div>
+    <hr/>
+    
+    {% include "components/managed_products.html" %}
+{% endblock %}

@@ -2,5 +2,7 @@
 # You need to run 'pip install wheel' before installing these.
 
 Django>=3.2
+django-crispy-forms
+djangorestframework
 mysqlclient
 python-dotenv

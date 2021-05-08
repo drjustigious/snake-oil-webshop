@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snake Oil Webshop</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'snakeoil.css' %}" />
+  <script src="{% static 'jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap/bootstrap.min.js' %}"></script>
+
+  <!-- Icon definitions and manifest. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}" />
+  <link rel="manifest" href="{% static 'site.webmanifest' %}" />
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-static-top navbar-inverse">
+  <div class="container">
+    <ul class="nav navbar-nav">
+      <li {% if active_view == "SHOP" %} class="active" {% endif %}>
+        <a href="{% url 'shop' %}"><span class="glyphicon glyphicon-home"></span> Shop</a>
+      </li>
+      {% if perms.snakeoil_webshop.add_product %}
+        <li {% if active_view == "PRODUCT_MANAGEMENT" %} class="active" {% endif %}>
+            <a href="{% url 'product-management' %}"><span class="glyphicon glyphicon-equalizer"></span> Product management</a>
+        </li>
+      {% endif %}
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li {% if active_view == "SHOPPING_CART" %} class="active" {% endif %}>
+            <a id="shoppingCartNavLink" href="{% url 'shopping-cart' %}"><span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;{{ shopping_cart_string|default:"0 items | 0.00 €" }}&nbsp;</a>
+        </li>
+      {% if user %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user"></span>&nbsp;{{ user.username }}<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href=""><span class="glyphicon glyphicon-cog"></span>&nbsp;My account</a></li>
+              <li><a href=""><span class="glyphicon glyphicon-lock"></span>&nbsp;Change password</a></li>
+              {% if user.is_staff %}
+                <li class="divider"></li>
+                <li><a href="/admin/"><span class="glyphicon glyphicon-alert"></span>&nbsp;Django Admin</a></li>
+              {% endif %}
+              <li class="divider"></li>
+              <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Log out</a></li>
+            </ul>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'login' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Log in</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+{% block modals %}{% endblock %}
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+
+<!-- Inject template variables into JavaScript. -->
+{% csrf_token %}
+<script type="text/javascript">
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  var webShopUrls = {
+    addToCart: "{% url "add-to-cart" %}"
+  };
+</script>
+<!-- Load the project-specific JavaScript resources. -->
+<script type="text/javascript" src="{% static 'snakeoil.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>Shopping Cart</h1>
+    <hr/>
+    {% include "components/cart_products.html" %}
+    <a class="btn btn-danger" href="{% url "clear-cart" %}">Clear Cart</a>
+{% endblock %}

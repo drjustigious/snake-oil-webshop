@@ -1,0 +1,32 @@
+ <!-- A table containing the products found as the result of a web shop search. -->
+ {% if products %}
+  <p><em>{{ num_results }} products found. Please click the rows for details.</em></p>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>In stock</th>
+        <th class="col-sm-1"><!-- Add to cart --></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        <tr onclick="snakeoil.showProductDetails({{ product.as_json }})">
+          <td>{{ product.sku }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.price }} €</td>
+          <td>{{ product.num_in_stock }}</td>
+          <td>
+            <button type="button" class="btn btn-success clickstopper" onclick="snakeoil.addToCart(this, {{ product.pk }});">
+              <span class="glyphicon glyphicon-circle-arrow-down"></span>&nbsp;Add to cart
+            </button>
+          </td>    
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else%}
+  <p><em>We found no products matching your search.</em></p>
+{% endif %}

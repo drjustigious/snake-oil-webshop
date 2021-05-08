@@ -1,0 +1,28 @@
+ <!-- A table containing the products currently in the user's active shopping cart. -->
+ {% if items_in_cart %}
+  <p><em>You have {{ num_items }} items in your shopping cart for a total price of {{ total_price }} €.</em></p>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>In stock</th>
+        <th>In cart</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items_in_cart %}
+        <tr>
+          <td>{{ item.product.sku }}</td>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.product.price }} €</td>
+          <td>{{ item.product.num_in_stock }}</td>
+          <td>{{ item.num_items }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else%}
+  <p><em>Your shopping cart is empty.</em></p>
+{% endif %}

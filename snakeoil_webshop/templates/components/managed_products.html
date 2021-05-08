@@ -1,0 +1,30 @@
+ <!-- A table containing the last added products. -->
+ {% if products %}
+  <p><em>{{ num_results }} existing products found.</em></p>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>In stock</th>
+        <th>Created</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        <tr onclick="snakeoil.showManagedProductDetails({{ product.as_json }})">
+          <td>{{ product.sku }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.price }} €</td>
+          <td>{{ product.num_in_stock }}</td> 
+          <td>{{ product.created }}</td>
+          <td>{{ product.updated }}</td> 
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else%}
+  <p><em>No existing products.</em></p>
+{% endif %}

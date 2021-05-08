@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container" style="max-width: 320px;">
+      <form id="login-form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="input-group" style="padding-bottom: 4px;">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+          <input id="id_username" name="username" type="text" placeholder="Username" class="form-control">
+        </div>
+        <div class="input-group" style="padding-bottom: 4px;">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+          <input id="id_password" name="password" type="password" placeholder="Password" class="form-control">
+        </div>
+
+        {% if form.errors %}
+          <p class="text-danger text-center">
+              Your username and password didn't match. 
+              Please try again.
+          </p>
+        {% endif %}
+        
+        <div class="input-group" style="margin: auto;">
+          <input type="submit" value="Log in" class="btn btn-primary btn-lg" />
+          <input type="hidden" name="next" value="{{ next }}" />
+        </div>
+      </form>
+  </div>  
+{% endblock %}
