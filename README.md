@@ -23,9 +23,15 @@ Following the fine tradition of snake oil trade, this web shop does not actually
 - All custom models exposed via Django Admin.
 - Django tests for main features.
 
-### Tech stack:
+### Tech stack (tested on these versions):
 - MySQL 8
+- nginx 1.14
+- gunicorn 20.1
 - Python 3.8
 - Django 3.2
 - Django Rest Framework 3.12
 - Bootstrap 3
+
+---
+### Deployment notes:
+- The directory `conf` includes templates for a systemd service unit and an nginx site configuration that can be used as a reference when deploying this solution. A demo/test deployment has once been set up on Amazon Lightsail using gunicorn and nginx to serve out the project with SSL certificates obtained via certbot (Let's Encrypt).
